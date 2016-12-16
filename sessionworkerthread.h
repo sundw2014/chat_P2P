@@ -17,7 +17,7 @@ class SessionWorker : public QObject
     Q_OBJECT
 public:
     SessionWorker(QString peerIP){
-        peerIP = "127.0.0.1";
+//        peerIP = "127.0.0.1";
         sessionSocket = new QTcpSocket(this);
         sessionSocket->connectToHost(QHostAddress(peerIP), clientPort);
     }
@@ -45,7 +45,7 @@ public slots:
     }
 
     void processMsgQueue(){
-//        qDebug()<<"processMsgQueue() stub";
+//        qDebug()<<"processMsgQueue()";
         static QString receivedData;
         if(!msgToSend.isEmpty())
         {
@@ -54,24 +54,25 @@ public slots:
             sessionSocket->write(wrapMsg(msg).toLocal8Bit());
             if(sessionSocket->waitForBytesWritten(1000)==true){
                 msgToSend.pop_front();
-                qDebug()<<"msgSent: "<<msg;
+//                qDebug()<<"msgSent: "<<msg;
                 emit msgSent(msg);
             }
             else{
                 ;
             }
         }
-        if(sessionSocket->waitForReadyRead(10) == true){
+//        if(sessionSocket->waitForReadyRead(10) == true){
             receivedData += sessionSocket->readAll();
+//            qDebug()<<receivedData;
             QString result = checkOutAvailableMsg(receivedData);
             while(!result.isEmpty()){
                 msgReceived.append(result);
                 result = checkOutAvailableMsg(receivedData);
             }
-        }
+//        }
         if(bufStatus == false){
             if(!msgReceived.isEmpty()){
-                qDebug()<<"msg Received: "<<msgReceived[0];
+//                qDebug()<<"msg Received: "<<msgReceived[0];
                 emit newMsg(msgReceived[0]);
                 msgReceived.pop_front();
             }
