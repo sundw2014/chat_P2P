@@ -6,12 +6,17 @@
 SessionWorkerThread::SessionWorkerThread(QString _peerIP) // active session
 {
     peerIP = _peerIP;
+    sessionWorker = new SessionWorker(peerIP);
+    sessionWorker->moveToThread(this);
 }
 
 SessionWorkerThread::SessionWorkerThread(QTcpSocket *_sessionSocket) // positive session
 {
-    sessionSocket->moveToThread(this);
+    _sessionSocket->setParent(nullptr);
+    _sessionSocket->moveToThread(this);
     sessionSocket = _sessionSocket;
+    sessionWorker = new SessionWorker(sessionSocket);
+    sessionWorker->moveToThread(this);
 }
 
 SessionWorkerThread::~SessionWorkerThread()
@@ -24,13 +29,13 @@ SessionWorkerThread::~SessionWorkerThread()
 
 void SessionWorkerThread::run()
 {
-    if(sessionSocket!=nullptr){
-        sessionWorker = new SessionWorker(sessionSocket);
-    }
-    else{
-        sessionWorker = new SessionWorker(peerIP);
-    }
-    QTimer t(this);
+
+    QTimer t(nullptr);
+    t.moveToThread(this);
+//    QTimer t2(nullptr);
+//    t2.moveToThread(this);
+//    connect(&t2,SIGNAL(timeout()),sessionWorker,SLOT(fake()));
+//    t2.start(1000);
 
     connect(&t,SIGNAL(timeout()),sessionWorker,SLOT(processMsgQueue()),Qt::DirectConnection);
     t.start(1000); //process queue per 1000ms

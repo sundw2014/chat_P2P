@@ -11,7 +11,7 @@ class UpdateFriendsListThread : public QThread
 
 public:
     UpdateFriendsListThread(){}
-    UpdateFriendsListThread(MainWindow *_bindWindow,QString serverIP, int serverPort);
+    UpdateFriendsListThread(MainWindow *_bindWindow,QString _serverIP, int _serverPort);
     ~UpdateFriendsListThread();
 
 private:
@@ -19,9 +19,15 @@ private:
     MainWindow *bindWindow;
     QString checkFriendStatus(QTcpSocket *client, const QString friend_No);
     QStringList getFriendsListWithStatus(QStringList friendsList);
+    QString serverIP;
+    int serverPort;
 
 protected:
     void run() {
+        tcpSocket2Server = new QTcpSocket(nullptr);
+        tcpSocket2Server->moveToThread(this);
+        tcpSocket2Server->connectToHost(QHostAddress(serverIP), serverPort);
+
         while(1) {
             const QStringListModel *friendsListModel = bindWindow->getFriendsListModel();
             QStringList l = getFriendsListWithStatus(friendsListModel->stringList());

@@ -14,11 +14,11 @@ QString timeOut("time out");
 QString offline("offline");
 QString wrongFriendNo("wrong friend No");
 
-UpdateFriendsListThread::UpdateFriendsListThread(MainWindow *_bindWindow,QString serverIP, int serverPort)
+UpdateFriendsListThread::UpdateFriendsListThread(MainWindow *_bindWindow,QString _serverIP, int _serverPort)
 {
-    tcpSocket2Server = new QTcpSocket(this);
-    tcpSocket2Server->moveToThread(this);
-    tcpSocket2Server->connectToHost(QHostAddress(serverIP), serverPort);
+    serverIP = _serverIP;
+    serverPort = _serverPort;
+
     bindWindow = _bindWindow;
     connect(this,SIGNAL(gotFriendsList(QStringList)),bindWindow,SLOT(updateFriendsListModel(QStringList)));
 }
@@ -70,7 +70,7 @@ QStringList UpdateFriendsListThread::getFriendsListWithStatus(QStringList friend
         QStringList _friendSplited = _friend.split('\t');
         QString friend_No = _friendSplited[0];
         QString result = checkFriendStatus(tcpSocket2Server, friend_No);
-        qDebug()<<friend_No<<" is "<<result;
+//        qDebug()<<friend_No<<" is "<<result;
         if(result == offline)
         {
             _friend = _friendSplited[0] + "\t" + _friendSplited[1];

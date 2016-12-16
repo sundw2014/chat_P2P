@@ -67,5 +67,6 @@ void MainWindow::on_listView_friends_doubleClicked(const QModelIndex &index)
 
 void MainWindow::newConnect(){
     QTcpSocket *tcpSocket =  tcpServer->nextPendingConnection();
-    (new SessionWorkerThread(tcpSocket))->start();
+    SessionWorkerThread *sessionThread = new SessionWorkerThread(tcpSocket);
+    emit newSession(sessionThread);
 }

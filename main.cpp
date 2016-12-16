@@ -24,9 +24,10 @@ int main(int argc, char *argv[])
     w_FriendsList.show();
 
     SessionsWindow w_Sessions;
-//    w_Sessions.show();
+    w_Sessions.show();
 
-    QObject::connect(&w_FriendsList,SIGNAL(newSession(QStringList)),&w_Sessions,SLOT(addNewSession));
+    QObject::connect(&w_FriendsList,SIGNAL(newSession(QStringList)),&w_Sessions,SLOT(addNewSession(QStringList)));
+    QObject::connect(&w_FriendsList,SIGNAL(newSession(SessionWorkerThread*)),&w_Sessions,SLOT(addNewSession(SessionWorkerThread*)));
 //    QThread* updateFriendsThread = new QThread(nullptr);
 //    QTimer *updateFriendsStatusTimer = new QTimer(nullptr);
 //    updateFriendsStatusTimer->setInterval(10000);

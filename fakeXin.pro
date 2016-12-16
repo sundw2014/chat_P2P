@@ -18,17 +18,20 @@ SOURCES += main.cpp\
     logindialog.cpp \
     sessionswindow.cpp \
     updatefriendslistthread.cpp \
-    sessionworkerthread.cpp
+    sessionworkerthread.cpp \
+    sessiontab.cpp
 
 HEADERS  += mainwindow.h \
     logindialog.h \
     sessionswindow.h \
     common.h \
     updatefriendslistthread.h \
-    sessionworkerthread.h
+    sessionworkerthread.h \
+    sessiontab.h
 
 FORMS    += mainwindow.ui \
     logindialog.ui \
-    sessionswindow.ui
+    sessionswindow.ui \
+    sessiontab.ui
 
 CONFIG += c++11

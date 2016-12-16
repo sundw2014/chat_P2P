@@ -5,6 +5,7 @@
 #include <QStringListModel>
 #include <QTimer>
 #include <QTcpServer>
+#include "sessionworkerthread.h"
 
 namespace Ui {
 class MainWindow;
@@ -33,6 +34,7 @@ public slots:
 
 signals:
     void newSession(QStringList friendsSplited);
+    void newSession(SessionWorkerThread *sessionThread);
 
 private:
     Ui::MainWindow *ui;

@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QString>
+#include "sessionworkerthread.h"
 
 namespace Ui {
 class SessionsWindow;
@@ -18,6 +19,7 @@ public:
 
 public slots:
     void addNewSession(QStringList friendSplited);
+    void addNewSession(SessionWorkerThread *sessionThread);
 
 private:
     Ui::SessionsWindow *ui;
