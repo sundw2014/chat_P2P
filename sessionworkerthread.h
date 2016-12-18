@@ -12,6 +12,7 @@
 #include <QCryptographicHash>
 #include <QFile>
 #include <QFileInfo>
+#include <QByteArrayMatcher>
 
 const QString magicHead("05c5ce0993f4bb4ea2f06e32f7d7d5e8");
 const QString magicTail("3e31402033a9092b63e4b42fe3921879");
@@ -59,12 +60,12 @@ public slots:
         else{
             emit connectStatusChanged(QString("connected"));
         }
-        static QString receivedData;
+        static QByteArray receivedData;
         if(!msgToSend.isEmpty())
         {
             QString msg = msgToSend[0];
 
-            sessionSocket->write(wrapMsg(msg).toLocal8Bit());
+            sessionSocket->write(wrapMsg(msg));
             if(sessionSocket->waitForBytesWritten(1000)==true){
                 msgToSend.pop_front();
 //                qDebug()<<"msgSent: "<<msg;
@@ -106,28 +107,35 @@ private:
     QStringList msgToSend;
     QStringList msgReceived;
     QTcpSocket *sessionSocket;
-    const QString wrapMsg(QString msg){
-        if(msg.toStdString().substr(0,7) == std::string("file://"))
-        {
-            wrapFile(QString::fromStdString(msg.toStdString().substr(7)),msg);
+    const QByteArray wrapMsg(QString msg){
+        // send a file
+        QByteArray result;
+        if(msg.toStdString().substr(0,7) == std::string("file://")){
+            wrapFile(QString::fromStdString(msg.toStdString().substr(7)),result);
         }
-        return (magicHead + msg + magicTail);
+        else{
+            result = msg.toUtf8();
+        }
+        return (magicHead.toUtf8() + result + magicTail.toUtf8());
     }
 
-    const QString checkOutAvailableMsg(QString &receivedData){
-        std::string _receivedData = receivedData.toStdString();
-        size_t indexStart = _receivedData.find(magicHead.toStdString());
-        if(indexStart!=std::string::npos){
-            indexStart += magicHead.toStdString().length();
-            size_t indexStop = _receivedData.find(magicTail.toStdString());
-            if(indexStop!=std::string::npos){
-                receivedData = QString::fromUtf8(\
-                            _receivedData.substr(indexStop + magicTail.toStdString().length())\
-                            .c_str());
-                QString msg = QString::fromUtf8(_receivedData.substr(indexStart,indexStop-indexStart).c_str());
+    const QString checkOutAvailableMsg(QByteArray &receivedData){
+        QByteArrayMatcher matcher_magicHead(magicHead.toUtf8());
+        QByteArrayMatcher matcher_magicTail(magicTail.toUtf8());
+
+        int indexStart = matcher_magicHead.indexIn(receivedData);
+        if(indexStart!=-1){
+            indexStart += matcher_magicHead.pattern().size();
+            int indexStop = matcher_magicTail.indexIn(receivedData);
+            if(indexStop!=-1){
+                QByteArray msg = receivedData.mid(indexStart,indexStop-indexStart);
+                receivedData = receivedData.mid(indexStop+matcher_magicTail.pattern().size());
                 QString result = checkOutFile(msg);
-                if(result.isEmpty()){
-                    return msg;
+                if(result=="no file"){
+                    return QString::fromUtf8(msg);
+                }
+                else if(result=="wrong file md5"){
+                    return QString("new file, but wrong md5 sum");
                 }
                 else{
                     return QString("new file, written in " + result);
@@ -140,13 +148,22 @@ private:
         }
     }
 
-    QString checkOutFile(QString &msg){
-        QStringList fileSplited = msg.split(magicFileSpliter);
-        if(fileSplited.size()!=3){
-            return QString();
+    QString checkOutFile(QByteArray &msg){
+        QByteArrayMatcher matcher_magicFileSpliter(magicFileSpliter.toUtf8());
+        QList<QByteArray> fileSplited;
+        int index1 = -1, index2 = -1;
+        if((index1 = matcher_magicFileSpliter.indexIn(msg))==-1){
+            return QString("no file");
         }
-        QString filename = filePrefix + fileSplited[0] + QString("_") + QString::number(QDateTime::currentMSecsSinceEpoch());
-        QByteArray fileContent = fileSplited[1].toLocal8Bit();
+        if((index2 = matcher_magicFileSpliter.indexIn(msg,index1+1))==-1){
+            return QString("no file");
+        }
+        fileSplited[0] = msg.mid(0,index1);
+        fileSplited[1] = msg.mid(index1+matcher_magicFileSpliter.pattern().size(),index2-(index1+matcher_magicFileSpliter.pattern().size()));
+        fileSplited[2] = msg.mid(index2+matcher_magicFileSpliter.pattern().size());
+
+        QString filename = filePrefix + QString::fromUtf8(fileSplited[0]) + QString("_") + QString::number(QDateTime::currentMSecsSinceEpoch());
+        QByteArray fileContent = fileSplited[1];
 
         if(fileSplited[2] == checkSum(fileContent)){
             qDebug() << "new file: " << filename;
@@ -158,25 +175,35 @@ private:
         }
         else{
             qDebug() << "wrong file md5";
+            return QString("wrong file md5");
         }
         return filename;
     }
 
-    bool wrapFile(QString filename, QString& result){
+    bool wrapFile(QString filename, QByteArray& result){
+//        filename = QString("/home/sundw/friends.txt");
         QFileInfo fileInfo(filename);
+        while(filename.size() != 0){
+            if(filename[filename.size()-1] == ' ')
+                filename = QString::fromStdString(filename.toStdString().substr(0,filename.size()-1));
+            else
+                break;
+        }
         QFile file(filename);
-        file.open(QIODevice::ReadWrite);
+        if (!file.open(QIODevice::ReadOnly)) return false;
+//        file.open(QIODevice::ReadWrite);
         QByteArray content = file.readAll();
+//        qDebug() << file.errorString() << "," << file.size();
         file.close();
-        QString checksum = checkSum(content);
-        result = fileInfo.completeBaseName() + magicFileSpliter + QString::fromLocal8Bit(content) + magicFileSpliter + checksum;
+        QByteArray checksum = checkSum(content);
+        result = fileInfo.completeBaseName().toUtf8() + magicFileSpliter.toUtf8() + content + magicFileSpliter.toUtf8() + checksum;
         return true;
     }
 
-    QString checkSum(const QByteArray& data){
+    QByteArray checkSum(const QByteArray& data){
         QCryptographicHash md5Sum(QCryptographicHash::Md5);
         md5Sum.addData(data);
-        return md5Sum.result().toHex();
+        return md5Sum.result();
     }
 };
 
