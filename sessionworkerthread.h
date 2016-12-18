@@ -150,7 +150,6 @@ private:
 
     QString checkOutFile(QByteArray &msg){
         QByteArrayMatcher matcher_magicFileSpliter(magicFileSpliter.toUtf8());
-        QList<QByteArray> fileSplited;
         int index1 = -1, index2 = -1;
         if((index1 = matcher_magicFileSpliter.indexIn(msg))==-1){
             return QString("no file");
@@ -158,14 +157,14 @@ private:
         if((index2 = matcher_magicFileSpliter.indexIn(msg,index1+1))==-1){
             return QString("no file");
         }
-        fileSplited[0] = msg.mid(0,index1);
-        fileSplited[1] = msg.mid(index1+matcher_magicFileSpliter.pattern().size(),index2-(index1+matcher_magicFileSpliter.pattern().size()));
-        fileSplited[2] = msg.mid(index2+matcher_magicFileSpliter.pattern().size());
+        QByteArray fileSplited1 = msg.mid(0,index1);
+        QByteArray fileSplited2 = msg.mid(index1+matcher_magicFileSpliter.pattern().size(),index2-(index1+matcher_magicFileSpliter.pattern().size()));
+        QByteArray fileSplited3 = msg.mid(index2+matcher_magicFileSpliter.pattern().size());
 
-        QString filename = filePrefix + QString::fromUtf8(fileSplited[0]) + QString("_") + QString::number(QDateTime::currentMSecsSinceEpoch());
-        QByteArray fileContent = fileSplited[1];
+        QString filename = filePrefix + QString::fromUtf8(fileSplited1) + QString("_") + QString::number(QDateTime::currentMSecsSinceEpoch());
+        QByteArray fileContent = fileSplited2;
 
-        if(fileSplited[2] == checkSum(fileContent)){
+        if(fileSplited3 == checkSum(fileContent)){
             qDebug() << "new file: " << filename;
             QFile file(filename);
             file.open(QIODevice::WriteOnly);
