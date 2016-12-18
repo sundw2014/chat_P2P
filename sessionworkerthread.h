@@ -109,7 +109,7 @@ private:
     const QString wrapMsg(QString msg){
         if(msg.toStdString().substr(0,7) == std::string("file://"))
         {
-            wrapFile(msg,msg);
+            wrapFile(QString::fromStdString(msg.toStdString().substr(7)),msg);
         }
         return (magicHead + msg + magicTail);
     }
@@ -165,7 +165,7 @@ private:
     bool wrapFile(QString filename, QString& result){
         QFileInfo fileInfo(filename);
         QFile file(filename);
-        file.open(QIODevice::ReadOnly);
+        file.open(QIODevice::ReadWrite);
         QByteArray content = file.readAll();
         file.close();
         QString checksum = checkSum(content);
