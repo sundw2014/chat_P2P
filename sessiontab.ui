@@ -15,11 +15,22 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QLabel" name="label_friendName">
-     <property name="text">
-      <string>foo</string>
-     </property>
-    </widget>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QLabel" name="label_friendName">
+       <property name="text">
+        <string>foo</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="label_connectStatus">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
    <item>
     <widget class="QScrollArea" name="scrollArea_Sessioncontent">
@@ -32,7 +43,7 @@
         <x>0</x>
         <y>0</y>
         <width>613</width>
-        <height>417</height>
+        <height>415</height>
        </rect>
       </property>
      </widget>

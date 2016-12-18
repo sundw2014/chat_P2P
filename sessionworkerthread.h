@@ -8,9 +8,15 @@
 #include <QHostAddress>
 #include "common.h"
 #include <QTimer>
+#include <QDateTime>
+#include <QCryptographicHash>
+#include <QFile>
+#include <QFileInfo>
 
 const QString magicHead("05c5ce0993f4bb4ea2f06e32f7d7d5e8");
 const QString magicTail("3e31402033a9092b63e4b42fe3921879");
+const QString magicFileSpliter("65ef05e65fa4cecce8dadaf76800a65e");
+const QString filePrefix("data/");
 
 class SessionWorker : public QObject
 {
@@ -46,6 +52,13 @@ public slots:
 
     void processMsgQueue(){
 //        qDebug()<<"processMsgQueue()";
+        if(QAbstractSocket::ConnectedState != sessionSocket->state()){
+            emit connectStatusChanged(QString("disconnected"));
+            return;
+        }
+        else{
+            emit connectStatusChanged(QString("connected"));
+        }
         static QString receivedData;
         if(!msgToSend.isEmpty())
         {
@@ -86,6 +99,7 @@ public slots:
 signals:
     void newMsg(QString msg);
     void msgSent(QString msg);
+    void connectStatusChanged(QString status);
 
 private:
     bool bufStatus = false;
@@ -93,8 +107,13 @@ private:
     QStringList msgReceived;
     QTcpSocket *sessionSocket;
     const QString wrapMsg(QString msg){
+        if(msg.toStdString().substr(0,7) == std::string("file://"))
+        {
+            wrapFile(msg,msg);
+        }
         return (magicHead + msg + magicTail);
     }
+
     const QString checkOutAvailableMsg(QString &receivedData){
         std::string _receivedData = receivedData.toStdString();
         size_t indexStart = _receivedData.find(magicHead.toStdString());
@@ -105,13 +124,59 @@ private:
                 receivedData = QString::fromUtf8(\
                             _receivedData.substr(indexStop + magicTail.toStdString().length())\
                             .c_str());
-                return QString::fromUtf8(_receivedData.substr(indexStart,indexStop-indexStart).c_str());
+                QString msg = QString::fromUtf8(_receivedData.substr(indexStart,indexStop-indexStart).c_str());
+                QString result = checkOutFile(msg);
+                if(result.isEmpty()){
+                    return msg;
+                }
+                else{
+                    return QString("new file, written in " + result);
+                }
             }
             return QString();
         }
         else{
             return QString();
         }
+    }
+
+    QString checkOutFile(QString &msg){
+        QStringList fileSplited = msg.split(magicFileSpliter);
+        if(fileSplited.size()!=3){
+            return QString();
+        }
+        QString filename = filePrefix + fileSplited[0] + QString("_") + QString::number(QDateTime::currentMSecsSinceEpoch());
+        QByteArray fileContent = fileSplited[1].toLocal8Bit();
+
+        if(fileSplited[2] == checkSum(fileContent)){
+            qDebug() << "new file: " << filename;
+            QFile file(filename);
+            file.open(QIODevice::WriteOnly);
+            file.write(fileContent);
+            file.close();
+            qDebug() << "finished write " << filename;
+        }
+        else{
+            qDebug() << "wrong file md5";
+        }
+        return filename;
+    }
+
+    bool wrapFile(QString filename, QString& result){
+        QFileInfo fileInfo(filename);
+        QFile file(filename);
+        file.open(QIODevice::ReadOnly);
+        QByteArray content = file.readAll();
+        file.close();
+        QString checksum = checkSum(content);
+        result = fileInfo.completeBaseName() + magicFileSpliter + QString::fromLocal8Bit(content) + magicFileSpliter + checksum;
+        return true;
+    }
+
+    QString checkSum(const QByteArray& data){
+        QCryptographicHash md5Sum(QCryptographicHash::Md5);
+        md5Sum.addData(data);
+        return md5Sum.result().toHex();
     }
 };
 

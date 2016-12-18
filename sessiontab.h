@@ -26,6 +26,7 @@ private:
 public slots:
     void newMsg(QString msg);
     void msgSent(QString msg);
+    void updateConnectStatus(QString status);
 
 signals:
     void sendMsg(QString msg);

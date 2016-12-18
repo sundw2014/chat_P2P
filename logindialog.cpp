@@ -47,6 +47,7 @@ LoginDialog::LoginDialog(QWidget *parent) :
        serverPort = ui->lineEdit_sport->text().toInt();
        int result = realLogin(ui->lineEdit_usr->text(),ui->lineEdit_pwd->text(),serverIP,serverPort);
        if(!result){
+           usrName = ui->lineEdit_usr->text();
            this->accept();
        }
        else{
@@ -66,6 +67,7 @@ LoginDialog::LoginDialog(QWidget *parent) :
                     break;
            }
            QMessageBox::warning(this,"message",ErrMsg,QMessageBox::Yes);
+           usrName = QString();
            this->reject();
            this->close();
        }
@@ -76,4 +78,28 @@ LoginDialog::LoginDialog(QWidget *parent) :
 LoginDialog::~LoginDialog()
 {
     delete ui;
+}
+
+bool LoginDialog::logout(){
+    QTcpSocket client(this);
+    client.connectToHost(QHostAddress(serverIP), serverPort);
+    client.write((QString("logout") + usrName).toLocal8Bit().data());
+    if(client.waitForBytesWritten(1000)==false){
+        return false;
+    }
+    QString response;
+    if(client.waitForReadyRead(1000) == false){
+        return false;
+    }
+    QTime t;
+    t.start();
+    while (t.elapsed() < 1000) {
+        response += client.readAll();
+        if(response == "loo"){
+            // success
+            return true;
+        }
+    }
+    // out of time
+    return false;
 }

@@ -41,3 +41,8 @@ void sessionTab::newMsg(QString msg){
     label->setText(msg);
     sessionContentLayout->addWidget(new QLabel(QString("peer say:" + msg)));
 }
+
+void sessionTab::updateConnectStatus(QString status)
+{
+    ui->label_connectStatus->setText(status);
+}

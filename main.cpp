@@ -36,5 +36,12 @@ int main(int argc, char *argv[])
 //    QObject::connect(updateFriendsThread, SIGNAL(started()), updateFriendsStatusTimer, SLOT(start()));
 //    updateFriendsThread->start();
 //    updateFriendsStatusTimer->start(10000);
-    return a.exec();
+    a.exec();
+    if(loginDlg.logout() == true){
+        qDebug() << "logout loo";
+    }
+    else{
+        qDebug() << "logout error";
+    }
+    return 0;
 }

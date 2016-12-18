@@ -26,6 +26,7 @@ void SessionsWindow::addNewSession(QStringList friendSplited)
     connect(sessionThread->getSessionWorker(),SIGNAL(msgSent(QString)),newTab,SLOT(msgSent(QString)));
     connect(newTab, SIGNAL(sendMsg(QString)), sessionThread->getSessionWorker(), SLOT(addMsgToQueue(QString)));
     connect(sessionThread->getSessionWorker(),SIGNAL(newMsg(QString)),newTab,SLOT(newMsg(QString)));
+    connect(sessionThread->getSessionWorker(),SIGNAL(connectStatusChanged(QString)),newTab,SLOT(updateConnectStatus(QString)));
     sessionThread->start();
 }
 
@@ -38,5 +39,6 @@ void SessionsWindow::addNewSession(SessionWorkerThread *sessionThread)
     connect(sessionThread->getSessionWorker(),SIGNAL(msgSent(QString)),newTab,SLOT(msgSent(QString)));
     connect(newTab, SIGNAL(sendMsg(QString)), sessionThread->getSessionWorker(), SLOT(addMsgToQueue(QString)));
     connect(sessionThread->getSessionWorker(),SIGNAL(newMsg(QString)),newTab,SLOT(newMsg(QString)));
+    connect(sessionThread->getSessionWorker(),SIGNAL(connectStatusChanged(QString)),newTab,SLOT(updateConnectStatus(QString)));
     sessionThread->start();
 }
