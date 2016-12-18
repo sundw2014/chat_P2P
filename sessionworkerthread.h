@@ -184,7 +184,7 @@ private:
 //        filename = QString("/home/sundw/friends.txt");
         QFileInfo fileInfo(filename);
         while(filename.size() != 0){
-            if(filename[filename.size()-1] == ' ')
+            if(filename[filename.size()-1] == ' ' || filename[filename.size()-1] == '\r' || filename[filename.size()-1] == '\n')
                 filename = QString::fromStdString(filename.toStdString().substr(0,filename.size()-1));
             else
                 break;
