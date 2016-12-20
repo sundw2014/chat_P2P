@@ -42,3 +42,9 @@ void SessionsWindow::addNewSession(SessionWorkerThread *sessionThread)
     connect(sessionThread->getSessionWorker(),SIGNAL(connectStatusChanged(QString)),newTab,SLOT(updateConnectStatus(QString)));
     sessionThread->start();
 }
+
+void SessionsWindow::addNewGroupSession()
+{
+    sessionTab *newTab = new sessionTab();
+    ui->tabWidget_session->addTab(newTab,QString("Group"));
+}

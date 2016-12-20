@@ -26,6 +26,8 @@ public:
 private slots:
     void on_listView_friends_doubleClicked(const QModelIndex &index);
 
+    void on_pushButton_newGroupSession_clicked();
+
 public slots:
     void updateFriendsListModel(const QStringList& friendsList){
         friendsListModel->setStringList(friendsList);
@@ -35,6 +37,7 @@ public slots:
 signals:
     void newSession(QStringList friendsSplited);
     void newSession(SessionWorkerThread *sessionThread);
+    void newGroupSession();
 
 private:
     Ui::MainWindow *ui;

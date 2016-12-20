@@ -2,6 +2,7 @@
 #include "ui_sessiontab.h"
 #include <QVBoxLayout>
 #include <QLabel>
+#include <common.h>
 
 sessionTab::sessionTab(QWidget *parent) :
     QWidget(parent),
@@ -33,13 +34,18 @@ void sessionTab::msgSent(QString msg){
     QLabel *label = new QLabel();
     label->setText(msg);
     // label->
-    sessionContentLayout->addWidget(new QLabel(QString("you say: ") + msg));
+    sessionContentLayout->addWidget(new QLabel(/*QString("you say: ") +*/ msg));
 }
 
 void sessionTab::newMsg(QString msg){
     QLabel *label = new QLabel();
     label->setText(msg);
-    sessionContentLayout->addWidget(new QLabel(QString("peer say:" + msg)));
+    if(msg.mid(0,myName.size()) == myName){
+
+    }
+    else{
+        sessionContentLayout->addWidget(new QLabel(/*QString("peer say:") +*/ msg));
+    }
 }
 
 void sessionTab::updateConnectStatus(QString status)

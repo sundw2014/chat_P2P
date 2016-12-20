@@ -21,7 +21,6 @@ public:
 private:
     Ui::LoginDialog *ui;
     int realLogin(QString usr, QString passwd, QString serverIP, int serverPort);
-    QString usrName;
 };
 
 #endif // LOGINDIALOG_H

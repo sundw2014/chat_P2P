@@ -45,6 +45,10 @@ QStringList* MainWindow::loadFriends(const QString friendsListFilename)
        while (!in.atEnd())
        {
           QString line = in.readLine();
+          if(line.mid(0,10) == usrName)
+          {
+              myName = line.mid(11,line.size()-11-1);
+          }
           friendsList->append(line);
        }
        inputFile.close();
@@ -69,4 +73,9 @@ void MainWindow::newConnect(){
     QTcpSocket *tcpSocket =  tcpServer->nextPendingConnection();
     SessionWorkerThread *sessionThread = new SessionWorkerThread(tcpSocket);
     emit newSession(sessionThread);
+}
+
+void MainWindow::on_pushButton_newGroupSession_clicked()
+{
+    emit newGroupSession();
 }

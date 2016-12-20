@@ -9,6 +9,8 @@
 QString serverIP = "166.111.140.14";
 int serverPort = 8000;
 int clientPort = 10086;
+QString myName = "";
+QString usrName = "";
 
 int main(int argc, char *argv[])
 {

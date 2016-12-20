@@ -20,6 +20,7 @@ public:
 public slots:
     void addNewSession(QStringList friendSplited);
     void addNewSession(SessionWorkerThread *sessionThread);
+    void addNewGroupSession();
 
 private:
     Ui::SessionsWindow *ui;
