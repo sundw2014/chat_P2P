@@ -110,8 +110,9 @@ private:
     const QByteArray wrapMsg(QString msg){
         // send a file
         QByteArray result;
-        if(msg.toStdString().substr(0,7) == std::string("file://")){
-            wrapFile(QString::fromStdString(msg.toStdString().substr(7)),result);
+        size_t index = msg.toStdString().find("file://");
+        if(index!=std::string::npos){
+            wrapFile(QString::fromStdString(msg.toStdString().substr(index+7)),result);
         }
         else{
             result = msg.toUtf8();
