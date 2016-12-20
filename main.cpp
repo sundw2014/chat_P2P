@@ -30,6 +30,8 @@ int main(int argc, char *argv[])
 
     QObject::connect(&w_FriendsList,SIGNAL(newSession(QStringList)),&w_Sessions,SLOT(addNewSession(QStringList)));
     QObject::connect(&w_FriendsList,SIGNAL(newSession(SessionWorkerThread*)),&w_Sessions,SLOT(addNewSession(SessionWorkerThread*)));
+    QObject::connect(&w_FriendsList,SIGNAL(newGroupSession()),&w_Sessions,SLOT(addNewGroupSession()));
+
 //    QThread* updateFriendsThread = new QThread(nullptr);
 //    QTimer *updateFriendsStatusTimer = new QTimer(nullptr);
 //    updateFriendsStatusTimer->setInterval(10000);

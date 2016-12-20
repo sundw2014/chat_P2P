@@ -22,14 +22,19 @@ public:
 private:
     Ui::sessionTab *ui;
     QVBoxLayout *sessionContentLayout;
+    QString lastmsg; //fuck dirty
 
 public slots:
     void newMsg(QString msg);
     void msgSent(QString msg);
     void updateConnectStatus(QString status);
+    void popAddFriendsDialog();
+//    void addFriends(QStringList friendsIP, QStringList friendsName);
+    void addFriends(QString friendIP);
 
 signals:
     void sendMsg(QString msg);
+    void sendBroadcastMsg(QString msg);
 };
 
 #endif // SESSIONTAB_H

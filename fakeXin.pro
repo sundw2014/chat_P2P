@@ -19,7 +19,8 @@ SOURCES += main.cpp\
     sessionswindow.cpp \
     updatefriendslistthread.cpp \
     sessionworkerthread.cpp \
-    sessiontab.cpp
+    sessiontab.cpp \
+    selectfriendsdialog.cpp
 
 HEADERS  += mainwindow.h \
     logindialog.h \
@@ -27,11 +28,13 @@ HEADERS  += mainwindow.h \
     common.h \
     updatefriendslistthread.h \
     sessionworkerthread.h \
-    sessiontab.h
+    sessiontab.h \
+    selectfriendsdialog.h
 
 FORMS    += mainwindow.ui \
     logindialog.ui \
     sessionswindow.ui \
-    sessiontab.ui
+    sessiontab.ui \
+    selectfriendsdialog.ui
 
 CONFIG += c++11

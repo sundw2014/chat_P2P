@@ -114,7 +114,7 @@ private:
             wrapFile(QString::fromStdString(msg.toStdString().substr(7)),result);
         }
         else{
-            result = (myName + QString(" say: ") + msg).toUtf8();
+            result = msg.toUtf8();
         }
         return (magicHead.toUtf8() + result + magicTail.toUtf8());
     }

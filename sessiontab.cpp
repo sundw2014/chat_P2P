@@ -3,12 +3,27 @@
 #include <QVBoxLayout>
 #include <QLabel>
 #include <common.h>
+#include <QPushButton>
+#include <sessionworkerthread.h>
+#include <selectfriendsdialog.h>
 
 sessionTab::sessionTab(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::sessionTab)
 {
     ui->setupUi(this);
+    ui->label_friendName->setText(QString("Group"));
+    sessionContentLayout = new QVBoxLayout();
+    ui->scrollAreaWidgetContents->setLayout(sessionContentLayout);
+    connect(ui->pushButton_send,&QPushButton::clicked,this,[=](){
+        lastmsg=QString();
+        emit sendBroadcastMsg(myName + QString(" say: ") + ui->lineEdit_textToSend->text());
+        ui->lineEdit_textToSend->clear();
+    });
+
+    QPushButton *addFriendToGroup = new QPushButton(QString("add friends"));
+    ui->horizontalLayout_misc->addWidget(addFriendToGroup);
+    connect(addFriendToGroup,SIGNAL(clicked()),this,SLOT(popAddFriendsDialog()));
 }
 
 sessionTab::sessionTab(QString friendName, QWidget *parent) :
@@ -20,7 +35,8 @@ sessionTab::sessionTab(QString friendName, QWidget *parent) :
     sessionContentLayout = new QVBoxLayout();
     ui->scrollAreaWidgetContents->setLayout(sessionContentLayout);
     connect(ui->pushButton_send,&QPushButton::clicked,this,[=](){
-        emit sendMsg(ui->lineEdit_textToSend->text());
+        lastmsg=QString();
+        emit sendMsg(myName + QString(" say: ") + ui->lineEdit_textToSend->text());
         ui->lineEdit_textToSend->clear();
     });
 }
@@ -31,15 +47,13 @@ sessionTab::~sessionTab()
 }
 
 void sessionTab::msgSent(QString msg){
-    QLabel *label = new QLabel();
-    label->setText(msg);
-    // label->
-    sessionContentLayout->addWidget(new QLabel(/*QString("you say: ") +*/ msg));
+    if(lastmsg!=msg && msg.mid(0,myName.size()) == myName){
+        sessionContentLayout->addWidget(new QLabel(/*QString("you say: ") +*/ msg));
+        lastmsg=msg;
+    }
 }
 
 void sessionTab::newMsg(QString msg){
-    QLabel *label = new QLabel();
-    label->setText(msg);
     if(msg.mid(0,myName.size()) == myName){
 
     }
@@ -51,4 +65,23 @@ void sessionTab::newMsg(QString msg){
 void sessionTab::updateConnectStatus(QString status)
 {
     ui->label_connectStatus->setText(status);
+}
+
+void sessionTab::popAddFriendsDialog()
+{
+    SelectFriendsDialog *selectFriend = new SelectFriendsDialog();
+    connect(selectFriend,SIGNAL(exportFriendsIP(QString)),this,SLOT(addFriends(QString)));
+    selectFriend->exec();
+}
+
+void sessionTab::addFriends(QString friendIP)
+{
+//    for (QString &friendIP:friendsIP){
+        SessionWorkerThread *sessionThread = new SessionWorkerThread(friendIP);
+        connect(this,SIGNAL(sendBroadcastMsg(QString)),sessionThread->getSessionWorker(),SLOT(addMsgToQueue(QString)));
+        connect(sessionThread->getSessionWorker(),SIGNAL(newMsg(QString)),this,SIGNAL(sendBroadcastMsg(QString)));
+        connect(sessionThread->getSessionWorker(),SIGNAL(newMsg(QString)),this,SLOT(newMsg(QString)));
+        connect(sessionThread->getSessionWorker(),SIGNAL(msgSent(QString)),this,SLOT(msgSent(QString)));
+        sessionThread->start();
+//    }
 }
