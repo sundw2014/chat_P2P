@@ -31,6 +31,7 @@ public slots:
     void popAddFriendsDialog();
 //    void addFriends(QStringList friendsIP, QStringList friendsName);
     void addFriends(QString friendIP);
+    void sendBroadcastMsgSLOT(QString msg);
 
 signals:
     void sendMsg(QString msg);

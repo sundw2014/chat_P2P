@@ -79,9 +79,14 @@ void sessionTab::addFriends(QString friendIP)
 //    for (QString &friendIP:friendsIP){
         SessionWorkerThread *sessionThread = new SessionWorkerThread(friendIP);
         connect(this,SIGNAL(sendBroadcastMsg(QString)),sessionThread->getSessionWorker(),SLOT(addMsgToQueue(QString)));
-        connect(sessionThread->getSessionWorker(),SIGNAL(newMsg(QString)),this,SIGNAL(sendBroadcastMsg(QString)));
+        connect(sessionThread->getSessionWorker(),SIGNAL(newMsg(QString)),this,SLOT(sendBroadcastMsgSLOT(QString)));
         connect(sessionThread->getSessionWorker(),SIGNAL(newMsg(QString)),this,SLOT(newMsg(QString)));
         connect(sessionThread->getSessionWorker(),SIGNAL(msgSent(QString)),this,SLOT(msgSent(QString)));
         sessionThread->start();
 //    }
+}
+
+void sessionTab::sendBroadcastMsgSLOT(QString msg)
+{
+    emit sendBroadcastMsg(msg);
 }

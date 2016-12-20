@@ -47,7 +47,7 @@ QStringList* MainWindow::loadFriends(const QString friendsListFilename)
           QString line = in.readLine();
           if(line.mid(0,10) == usrName)
           {
-              myName = line.mid(11,line.size()-11-1);
+              myName = line.mid(11,line.size()-11);
           }
           friendsList->append(line);
        }
