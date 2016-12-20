@@ -43,7 +43,7 @@
         <x>0</x>
         <y>0</y>
         <width>613</width>
-        <height>415</height>
+        <height>422</height>
        </rect>
       </property>
      </widget>
@@ -58,6 +58,13 @@
       <widget class="QPushButton" name="pushButton_send">
        <property name="text">
         <string>SEND</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton_selectFile">
+       <property name="text">
+        <string>选择文件</string>
        </property>
       </widget>
      </item>
