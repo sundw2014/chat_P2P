@@ -162,7 +162,7 @@ private:
         QByteArray fileSplited2 = msg.mid(index1+matcher_magicFileSpliter.pattern().size(),index2-(index1+matcher_magicFileSpliter.pattern().size()));
         QByteArray fileSplited3 = msg.mid(index2+matcher_magicFileSpliter.pattern().size());
 
-        QString filename = filePrefix + QString::fromUtf8(fileSplited1) + QString("_") + QString::number(QDateTime::currentMSecsSinceEpoch());
+        QString filename = filePrefix + QString::number(QDateTime::currentMSecsSinceEpoch()) + QString("_") + QString::fromUtf8(fileSplited1);
         QByteArray fileContent = fileSplited2;
 
         if(fileSplited3 == checkSum(fileContent)){
@@ -196,7 +196,7 @@ private:
 //        qDebug() << file.errorString() << "," << file.size();
         file.close();
         QByteArray checksum = checkSum(content);
-        result = fileInfo.completeBaseName().toUtf8() + magicFileSpliter.toUtf8() + content + magicFileSpliter.toUtf8() + checksum;
+        result = (fileInfo.baseName() + QString(".") + fileInfo.completeSuffix()).toUtf8() + magicFileSpliter.toUtf8() + content + magicFileSpliter.toUtf8() + checksum;
         return true;
     }
 

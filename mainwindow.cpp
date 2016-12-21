@@ -10,7 +10,7 @@
 #include <QTcpServer>
 #include "sessionworkerthread.h"
 
-static const QString _friendsListFilename = "/home/sundw/friends.txt";
+static const QString _friendsListFilename = "./friends.txt";
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -42,6 +42,7 @@ QStringList* MainWindow::loadFriends(const QString friendsListFilename)
     if (inputFile.open(QIODevice::ReadOnly))
     {
        QTextStream in(&inputFile);
+       in.setCodec("UTF-8");
        while (!in.atEnd())
        {
           QString line = in.readLine();

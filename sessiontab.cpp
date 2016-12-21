@@ -6,6 +6,7 @@
 #include <QPushButton>
 #include <sessionworkerthread.h>
 #include <selectfriendsdialog.h>
+#include <QFileDialog>
 
 sessionTab::sessionTab(QWidget *parent) :
     QWidget(parent),
@@ -24,6 +25,17 @@ sessionTab::sessionTab(QWidget *parent) :
     QPushButton *addFriendToGroup = new QPushButton(QString("add friends"));
     ui->horizontalLayout_misc->addWidget(addFriendToGroup);
     connect(addFriendToGroup,SIGNAL(clicked()),this,SLOT(popAddFriendsDialog()));
+
+    connect(ui->pushButton_selectFile,&QPushButton::clicked,this,[=](){
+        QFileDialog *fileDialog = new QFileDialog(this);
+        fileDialog->setWindowTitle("select file");
+        fileDialog->setDirectory(".");
+        if(fileDialog->exec() == QDialog::Accepted) {
+            QString path = fileDialog->selectedFiles()[0];
+            ui->lineEdit_textToSend->clear();
+            ui->lineEdit_textToSend->setText(QString("file://" + path));
+        }
+    });
 }
 
 sessionTab::sessionTab(QString friendName, QWidget *parent) :
@@ -38,6 +50,16 @@ sessionTab::sessionTab(QString friendName, QWidget *parent) :
         lastmsg=QString();
         emit sendMsg(myName + QString(" say: ") + ui->lineEdit_textToSend->text());
         ui->lineEdit_textToSend->clear();
+    });
+    connect(ui->pushButton_selectFile,&QPushButton::clicked,this,[=](){
+        QFileDialog *fileDialog = new QFileDialog(this);
+        fileDialog->setWindowTitle("select file");
+        fileDialog->setDirectory(".");
+        if(fileDialog->exec() == QDialog::Accepted) {
+            QString path = fileDialog->selectedFiles()[0];
+            ui->lineEdit_textToSend->clear();
+            ui->lineEdit_textToSend->setText(QString("file://" + path));
+        }
     });
 }
 
