@@ -51,6 +51,8 @@ sessionTab::sessionTab(QString friendName, QWidget *parent) :
         emit sendMsg(myName + QString(" say: ") + ui->lineEdit_textToSend->text());
         ui->lineEdit_textToSend->clear();
     });
+    connect(ui->lineEdit_textToSend, SIGNAL(returnPressed()), ui->pushButton_send, SIGNAL(clicked()), Qt::UniqueConnection);
+
     connect(ui->pushButton_selectFile,&QPushButton::clicked,this,[=](){
         QFileDialog *fileDialog = new QFileDialog(this);
         fileDialog->setWindowTitle("select file");
