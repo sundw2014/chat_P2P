@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/list">
+        <file>friends.txt</file>
+    </qresource>
+</RCC>

@@ -38,3 +38,6 @@ FORMS    += mainwindow.ui \
     selectfriendsdialog.ui
 
 CONFIG += c++11
+
+RESOURCES += \
+    r.qrc

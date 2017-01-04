@@ -9,8 +9,10 @@
 #include <QMessageBox>
 #include <QTcpServer>
 #include "sessionworkerthread.h"
+#include <QUrl>
+#include <QDebug>
 
-static const QString _friendsListFilename = "./friends.txt";
+static const QString _friendsListFilename = ":/list/friends.txt";
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -54,6 +56,7 @@ QStringList* MainWindow::loadFriends(const QString friendsListFilename)
        }
        inputFile.close();
     }
+//    qDebug()<<inputFile.errorString();
     return friendsList;
 }
 
