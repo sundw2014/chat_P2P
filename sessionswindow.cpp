@@ -20,7 +20,8 @@ void SessionsWindow::addNewSession(QStringList friendSplited)
 {
 //    ui->
     sessionTab *newTab = new sessionTab(friendSplited[1]);
-    ui->tabWidget_session->addTab(newTab,friendSplited[1]);
+    int newTabIndex = ui->tabWidget_session->addTab(newTab,friendSplited[1]);
+    ui->tabWidget_session->setCurrentIndex(newTabIndex);
 
     SessionWorkerThread *sessionThread = new SessionWorkerThread(friendSplited[2]);
     connect(sessionThread->getSessionWorker(),SIGNAL(msgSent(QString)),newTab,SLOT(msgSent(QString)));
@@ -32,9 +33,10 @@ void SessionsWindow::addNewSession(QStringList friendSplited)
 
 void SessionsWindow::addNewSession(SessionWorkerThread *sessionThread)
 {
-    QString fake("fake");
+    QString fake("unknown");
     sessionTab *newTab = new sessionTab(fake);
-    ui->tabWidget_session->addTab(newTab,fake);
+    int newTabIndex = ui->tabWidget_session->addTab(newTab,fake);
+    ui->tabWidget_session->setCurrentIndex(newTabIndex);
 
     connect(sessionThread->getSessionWorker(),SIGNAL(msgSent(QString)),newTab,SLOT(msgSent(QString)));
     connect(newTab, SIGNAL(sendMsg(QString)), sessionThread->getSessionWorker(), SLOT(addMsgToQueue(QString)));
@@ -46,5 +48,6 @@ void SessionsWindow::addNewSession(SessionWorkerThread *sessionThread)
 void SessionsWindow::addNewGroupSession()
 {
     sessionTab *newTab = new sessionTab();
-    ui->tabWidget_session->addTab(newTab,QString("Group"));
+    int newTabIndex = ui->tabWidget_session->addTab(newTab,QString("Group"));
+    ui->tabWidget_session->setCurrentIndex(newTabIndex);
 }

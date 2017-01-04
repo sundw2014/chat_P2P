@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>好友列表</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -48,7 +48,7 @@
      <x>0</x>
      <y>0</y>
      <width>400</width>
-     <height>25</height>
+     <height>20</height>
     </rect>
    </property>
   </widget>

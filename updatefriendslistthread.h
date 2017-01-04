@@ -32,6 +32,7 @@ protected:
             const QStringListModel *friendsListModel = bindWindow->getFriendsListModel();
             QStringList l = getFriendsListWithStatus(friendsListModel->stringList());
             emit gotFriendsList(l);
+            sleep(1000);
         }
     }
 
